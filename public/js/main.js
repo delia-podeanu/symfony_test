@@ -1,4 +1,3 @@
-console.log("dfgjfs");
 
 const articles = document.querySelector("#articles");
 
