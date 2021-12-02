@@ -1,44 +1,61 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Articles{% endblock %}
+{% block title %}Articles
+{% endblock %}
 
 {% block body %}
-   <table class="table table-hover my-5 table-striped" id="articles">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Title</th>
-       <th scope="col">Picture</th>
-       <th scope="col">Type</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-{% if articles %}
-
-  {% for article in articles %}
-       <tr>
-      <td>{{article.id}}</td>
-      <td>{{article.title}}</td>
-       <td>
-       <img class="img-thumbnail" src="{{ asset('pictures/'  ~ article.pictureUrl) }}" alt="">
-       </td>
-      <td>{{article.type.name}}</td>
-      <td>
-        <a type="button" class="btn btn-primary" href="/article/{{article.id}}"><i class="far fa-eye"></i></a>
-        <a type="button" class="btn btn-success" href="/article/edit/{{article.id}}"><i class="fas fa-edit"></i></a>
-        <button type="button" class="btn btn-danger delete-btn" data-id={{article.id}}><i class="far fa-trash-alt"  data-id={{article.id}}></i></button>
-      </td>
-    </tr>
-  {% endfor %}
- 
-{% else %}
+  <table class="table table-hover table-striped mx-auto my-5" id="articles">
+    <thead>
       <tr>
-      <td colspan="4" class="text-center">No data</td>
-    </tr>
-{% endif %}
-  
-  </tbody>
-</table>
+        <th scope="col">#</th>
+        <th scope="col">Title</th>
+        <th scope="col">Picture</th>
+        <th scope="col">Type</th>
+        <th scope="col">Tags</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if articles %}
+
+        {% for article in articles %}
+          <tr>
+            <td>{{article.id}}</td>
+            <td>{{article.title}}</td>
+            <td>
+              <img class="img-thumbnail" src="{{ asset('pictures/' ~ article.pictureUrl) }}" alt="">
+            </td>
+            <td>{{article.type.name}}</td>
+            <td>
+              {% if article.tags %}
+
+                {% for tag in article.tags %}
+                  <span class="badge bg-primary">{{tag.name}}</span>
+                {% endfor %}
+
+              {% endif %}
+            </td>
+            <td>
+              <a type="button" class="btn btn-primary" href="/article/{{article.id}}">
+                <i class="far fa-eye"></i>
+              </a>
+              <a type="button" class="btn btn-success" href="/article/edit/{{article.id}}">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button type="button" class="btn btn-danger delete-btn" data-id={{article.id} }="}">
+                <i class="far fa-trash-alt" data-id={{article.id} }="}"></i>
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-center">No data</td>
+        </tr>
+      {% endif %}
+
+    </tbody>
+  </table>
 
 {% endblock %}

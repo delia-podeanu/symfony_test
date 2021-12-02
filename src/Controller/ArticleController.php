@@ -18,22 +18,24 @@ use App\Form\CommentType;
 
 class ArticleController extends AbstractController
 {
-    #[Route('/', name: 'article', methods:["GET"])]
+    #[Route('/', name: 'articles', methods: ["GET"])]
     public function index(): Response
     {
-        $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();  
+
+        $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();
         return $this->render('article/index.html.twig', [
             'articles' => $articles,
         ]);
     }
 
-    #[Route('/article/new', name: 'create_article', methods:["GET","POST"])]
+    #[Route('/article/new', name: 'create_article', methods: ["GET", "POST"])]
     public function create(Request $request, FileUploader $fileUploader): Response
     {
         $article = new Article();
+        $user = $this->getUser();
 
-        $form = $this->createForm(ArticleType::class,$article);
-        
+        $form = $this->createForm(ArticleType::class, $article);
+
         $form->handleRequest($request);
 
         $pictureFile = $form->get('pictureUrl')->getData();
@@ -42,26 +44,27 @@ class ArticleController extends AbstractController
             $article->setPictureUrl($pictureFileName);
         }
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $article = $form->getData();
+            $article->setUser($user);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($article);
             $entityManager->flush();
 
-            return $this->redirectToRoute('article');
+            return $this->redirectToRoute('articles');
         }
         return $this->renderForm('article/create_article.html.twig', [
             'form' => $form,
         ]);
     }
 
-    #[Route('/article/edit/{id}', name: 'edit_article', methods:["GET","POST"])]
+    #[Route('/article/edit/{id}', name: 'edit_article', methods: ["GET", "POST"])]
     public function edit(Request $request, $id, FileUploader $fileUploader): Response
     {
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
 
-        $form = $this->createForm(ArticleType::class,$article);
-        
+        $form = $this->createForm(ArticleType::class, $article);
+
         $form->handleRequest($request);
 
         $pictureFile = $form->get('pictureUrl')->getData();
@@ -71,34 +74,34 @@ class ArticleController extends AbstractController
         }
 
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $article = $form->getData();
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($article);
             $entityManager->flush();
 
-            return $this->redirectToRoute('article');
+            return $this->redirectToRoute('articles');
         }
         return $this->render('article/create_article.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/article/{id}', name: 'show_article', methods:["GET", "POST"])]
-    public function show(Request $request,$id): Response
+    #[Route('/article/{id}', name: 'show_article', methods: ["GET", "POST"])]
+    public function show(Request $request, $id): Response
     {
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
-        
+
         $error = null;
         $comment = new Comment();
 
-        $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['article'=>$id]);
-        $form = $this->createForm(CommentType::class,$comment);
-        
+        $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['article' => $id]);
+        $form = $this->createForm(CommentType::class, $comment);
+
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $comment = $form->getData();
-            $comment -> setArticle($article);
+            $comment->setArticle($article);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($comment);
             $entityManager->flush();
@@ -113,7 +116,7 @@ class ArticleController extends AbstractController
         ]);
     }
 
-    #[Route('/article/delete/{id}', name: 'delete_article', methods:["GET","DELETE"])]
+    #[Route('/article/delete/{id}', name: 'delete_article', methods: ["GET", "DELETE"])]
     public function delete($id): Response
     {
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
@@ -123,11 +126,11 @@ class ArticleController extends AbstractController
         $entityManager->flush();
 
 
-       $response = new Response();
-       return $response->send();
+        $response = new Response();
+        return $response->send();
     }
 
-    #[Route('/comment/delete/{id}', name: 'delete_comment', methods:["GET","DELETE"])]
+    #[Route('/comment/delete/{id}', name: 'delete_comment', methods: ["GET", "DELETE"])]
     public function deleteComment($id): Response
     {
         $comment = $this->getDoctrine()->getRepository(Comment::class)->find($id);
@@ -137,7 +140,7 @@ class ArticleController extends AbstractController
         $entityManager->flush();
 
 
-       $response = new Response();
-       return $response->send();
+        $response = new Response();
+        return $response->send();
     }
 }

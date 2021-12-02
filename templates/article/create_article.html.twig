@@ -1,31 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Articles{% endblock %}
-
+{% block title %}Articles
+{% endblock %}
 
 {% block body %}
 
-{{ form_start(form) }}
+  <div class="my-5">
+    <h4 class="mb-5">Create New Article</h4>
+    {{ form_start(form) }}
     <div>
-        {{ form_errors(form) }}
+      {{ form_errors(form) }}
     </div>
 
-        <div class="form-group">
-            {{ form_row(form.title) }}
-        </div>
-        <div class="form-group" >
-            {{ form_row(form.description) }}
-        </div>
-        <div class="col" >
-            {{ form_row(form.type) }}
-        </div>
-          <div class="col" >
-            {{ form_row(form.pictureUrl) }}
-        </div>
-          <div class="form-group" >
-            {{ form_row(form.submit) }}
-        </div>
-{{ form_end(form) }}
+    <div class="form-group">
+      {{ form_row(form.title) }}
+    </div>
+    <div class="form-group">
+      {{ form_row(form.description) }}
+    </div>
+    <div class="col">
+      {{ form_row(form.type) }}
+    </div>
+    <div class="col my-4">
+      {{ form_row(form.pictureUrl) }}
+    </div>
 
+    <h36>Tags:</h6>
+    <ul>
+      {% for tag in form.tags %}
+        <li>
+          <span class="mr-5">
+            {{ form_label(tag.name)}}</span>
+          {{ form_widget(tag.name)}}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <ul class="tags" data-index="{{ form.tags|length > 0 ? form.tags|last.vars.name + 1 : 0 }}" data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}"></ul>
+    <button type="button" class="add_item_link btn-success mb-5" data-collection-holder-class="tags">Add a tag</button>
+    <div class="form-group">
+      {{ form_row(form.submit) }}
+    </div>
+    {{ form_end(form) }}
+  </div>
+  <script>
+
+    const addFormToCollection = (e) => {
+      const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+      const item = document.createElement('li');
+
+      item.innerHTML = collectionHolder.dataset.prototype.replace(/__name__/g, collectionHolder.dataset.index);
+
+      collectionHolder.appendChild(item);
+
+      const container = item.querySelectorAll('div')[1]
+
+      console.log(container.parentElement.parentElement)
+
+      collectionHolder.dataset.index++
+      const tags = document.querySelectorAll('ul.tags li')
+      addTagFormDeleteLink(container)
+
+    };
+
+    const addTagFormDeleteLink = (tagFormLi) => {
+      const removeFormButton = document.createElement('span')
+      removeFormButton.classList
+      removeFormButton.innerText = 'x'
+
+      tagFormLi.append(removeFormButton);
+
+      removeFormButton.addEventListener('click', (e) => {
+        e.preventDefault()
+        tagFormLi.parentElement.parentElement.remove();
+      });
+    }
+
+    console.log(document.querySelectorAll('ul.tags li'))
+    document.querySelectorAll('.add_item_link').forEach(btn => btn.addEventListener("click", addFormToCollection));
+  </script>
 
 {% endblock %}

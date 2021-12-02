@@ -54,10 +54,22 @@ class Article
      */
     private $pictureUrl;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tags::class, inversedBy="articles", cascade={"persist"})
+     */
+    private $tags;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable;
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +175,42 @@ class Article
     public function setPictureUrl(?string $pictureUrl): self
     {
         $this->pictureUrl = $pictureUrl;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tags[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): self
+    {
+        $this->tags->removeElement($tag);
 
         return $this;
     }

@@ -2,54 +2,57 @@
 
 {% block title %}Article{% endblock %}
 
-
 {% block body %}
 
-<div class="card m-5">
-  <h5 class="card-header"> {{article.title}}</h5>
-  <div class="card-body">
-    <p class="card-text">{{article.description}}</p>
-     <p class="card-text">Created at: {{article.createdAt | date("m.d.Y")}}</p>
+  <div class="card m-5">
+    <h5 class="card-header">
+      {{article.title}}</h5>
+    <div class="card-body">
+      <p class="card-text">{{article.description}}</p>
+      <p class="card-text">Created at:
+        {{article.createdAt | date("m.d.Y")}}</p>
+    </div>
   </div>
-</div>
 
-{% if error %}
+  {% if error %}
     <div>{{error}}</div>
-{% endif %}
+  {% endif %}
 
-{{ form_start(form) }}
-    <div class="my-custom-class-for-errors">
-        {{ form_errors(form) }}
+  {{ form_start(form) }}
+  <div class="my-custom-class-for-errors">
+    {{ form_errors(form) }}
+  </div>
+
+  <div class="row m-5">
+    <div class="col">
+      {{ form_row(form.text) }}
     </div>
 
-    <div class="row m-5">
+    <div class="col" id="submit-comment" data-id="{{ article.id }}">
+      {{ form_row(form.submit) }}
+    </div>
+  </div>
+  {{ form_end(form) }}
+
+  <h5 class="my-3 mx-5">Comments</h1>
+  <ul id="comments" class="list-group list-group-flush mx-5">
+    {% for item in comments %}
+      <li class="d-flex list-group-item">
         <div class="col">
-            {{ form_row(form.text) }}
+          {{ item.text }}
         </div>
-    
-          <div class="col" id="submit-comment" data-id="{{ article.id }}">
-            {{ form_row(form.submit) }}
-        </div>
-    </div>
-{{ form_end(form) }}
 
-<h5 class= "my-3 mx-5">Comments</h1>
-<ul id="comments" class="list-group list-group-flush mx-5">
-{% for item in comments %}
-<li class="d-flex list-group-item">
         <div class="col">
-            {{ item.text }}
+          {{ item.createdAt | date("m.d.Y") }}
         </div>
-    
-          <div class="col" >
-            {{ item.createdAt | date("m.d.Y") }}
+        <div class="col">
+          <button type="button" class="btn btn-danger delete-comment" data-id={{item.id} }="}">
+            <i class="far fa-trash-alt delete-comment" data-id={{item.id} }="}"></i>
+          </button>
         </div>
-        <div class="col" >
-           <button type="button" class="btn btn-danger delete-comment" data-id={{item.id}}><i class="far fa-trash-alt delete-comment"  data-id={{item.id}}></i></button>
-        </div>
-    </div>
-    
-{% endfor %}
-</div>
+      </div>
+
+    {% endfor %}
+  </div>
 
 {% endblock %}
